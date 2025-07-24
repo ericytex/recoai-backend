@@ -122,7 +122,9 @@ def join_meeting_and_wait(link):
             threading.Thread(target=monitor_meeting_presence, daemon=True).start()
             return
         except TimeoutException:
-            print("[LOG] Immediate join not possible, checking admission status...", flush=True)
+            print("[LOG] Pre-join screen not detected in time. Meeting may not have started yet.", flush=True)
+            join_status['status'] = 'Meeting has not started yet. Waiting for host...'
+            return
         
         # Step 2: Check if admission was already denied
         if check_for_admission_denied():
