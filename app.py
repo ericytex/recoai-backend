@@ -130,6 +130,19 @@ def join_meeting_and_wait(link):
         except TimeoutException:
             print("[LOG] Pre-join screen not detected in time. Meeting may not have started yet.", flush=True)
             join_status['status'] = 'Meeting has not started yet. Waiting for host...'
+            # Enter polling loop to check for admission or denial
+            timeout = time.time() + 600  # 10 minutes
+            while time.time() < timeout:
+                if check_successfully_joined():
+                    join_status['status'] = 'success: Bot has joined the meeting and is recording...'
+                    print("[LOG] Bot has been admitted and joined the meeting!", flush=True)
+                    return
+                if check_for_admission_denied():
+                    join_status['status'] = 'Failed to join: Admission denied by host.'
+                    return
+                time.sleep(2)
+            join_status['status'] = 'Failed to join: Timed out waiting for host admission.'
+            print("[LOG] Bot timed out waiting for host admission.", flush=True)
             return
         
         # Step 2: Check if admission was already denied
