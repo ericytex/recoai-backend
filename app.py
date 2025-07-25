@@ -89,10 +89,16 @@ def join_meeting_and_wait(link):
                 # Check for the presence of the 'Leave call' button
                 browser.find_element(By.XPATH, "//button[@aria-label='Leave call']")
                 time.sleep(2)  # Check every 2 seconds
-            except (NoSuchElementException, WebDriverException, SessionNotCreatedException):
-                # If the button is gone and we didn't disconnect intentionally
-                join_status['status'] = 'Bot was removed from the meeting by the host.'
-                print("[LOG] Bot was removed from the meeting by the host.", flush=True)
+            except (NoSuchElementException, WebDriverException, SessionNotCreatedException) as e:
+                join_status['status'] = 'disconnected'
+                print("[LOG] Bot has disconnected from the meeting.", flush=True)
+                print(f"[DEBUG] monitor_meeting_presence exception: {e}", flush=True)
+                cleanup_browser()
+                break
+            except Exception as e:
+                join_status['status'] = 'disconnected'
+                print("[LOG] Bot has disconnected from the meeting (unexpected error).", flush=True)
+                print(f"[DEBUG] monitor_meeting_presence unexpected exception: {e}", flush=True)
                 cleanup_browser()
                 break
     

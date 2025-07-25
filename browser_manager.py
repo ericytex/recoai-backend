@@ -38,7 +38,10 @@ HANG_UP_BTN_XPATH = '/html/body/div[1]/c-wiz/div[1]/div/div[8]/div[3]/div[9]/div
 
 CHAT_CLOSE_BTN_XPATH = '/html/body/div[1]/c-wiz/div[1]/div/div[6]/div[3]/div[3]/div/div[2]/div[1]/div[2]/div/button'
 
-CHROME_PROFILE_PATH = '/Users/ericwatyekele/Library/Application Support/Google/Chrome/Profile 1'
+# Set Chrome profile path dynamically in the app's root directory
+APP_ROOT = os.path.dirname(os.path.abspath(__file__))
+CHROME_PROFILE_PATH = os.path.join(APP_ROOT, 'recoai-chrome-profile')
+CHROME_PROFILE_DIRECTORY = 'Default'
 
 browser = None
 
@@ -60,6 +63,12 @@ def initChrome():
     import undetected_chromedriver as uc
     from selenium.webdriver.chrome.options import Options
     chrome_options = Options()
+    # Ensure the Chrome profile directory exists
+    if not os.path.exists(CHROME_PROFILE_PATH):
+        os.makedirs(CHROME_PROFILE_PATH)
+        print(f"[DEBUG] Created Chrome profile directory at: {CHROME_PROFILE_PATH}", flush=True)
+    else:
+        print(f"[DEBUG] Using existing Chrome profile at: {CHROME_PROFILE_PATH}", flush=True)
     # IMPORTANT: Make sure all Chrome windows are closed before running the bot
     chrome_options.add_argument(f"--user-data-dir={CHROME_PROFILE_PATH}")
     chrome_options.add_argument(f"--profile-directory={CHROME_PROFILE_DIRECTORY}")
